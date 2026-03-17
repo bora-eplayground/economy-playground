@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>경제놀이터 | Economy Playground</title>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Pretendard", "Noto Sans KR", sans-serif;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: linear-gradient(180deg, #f7f8fc 0%, #eef1ff 100%);
+      color: #1f2430;
+      overflow-x: hidden;
+    }
+
+    #bg-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+    }
+
+    .page {
+      position: relative;
+      z-index: 2;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: rgba(255, 255, 255, 0.82);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(70, 60, 140, 0.08);
+    }
+
+    .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 18px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .brand {
+      font-size: 28px;
+      font-weight: 900;
+      color: #203b8f;
+      letter-spacing: -0.5px;
+    }
+
+    nav {
+      display: flex;
+      gap: 22px;
+      flex-wrap: wrap;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: #434a5d;
+      font-weight: 600;
+      font-size: 15px;
+    }
+
+    .hero {
+      max-width: 1200px;
+      margin: 0 auto;
+      min-height: 100vh;
+      padding: 60px 24px 80px;
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      align-items: center;
+      gap: 40px;
+    }
+
+    .hero-left {
+      background: rgba(255, 255, 255, 0.76);
+      backdrop-filter: blur(14px);
+      border-radius: 32px;
+      padding: 48px;
+      box-shadow: 0 24px 60px rgba(45, 70, 160, 0.12);
+    }
+
+    .eyebrow {
+      display: inline-block;
+      margin-bottom: 20px;
+      padding: 9px 15px;
+      border-radius: 999px;
+      background: #eef1ff;
+      color: #f26b2c;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .hero-left h1 {
+      font-size: 64px;
+      line-height: 1.12;
+      color: #0e3b8f;
+      margin-bottom: 20px;
+      word-break: keep-all;
+      letter-spacing: -1.5px;
+    }
+
+    .hero-left h1 span {
+      color: #f26b2c;
+    }
+
+    .hero-left p {
+      font-size: 18px;
+      line-height: 1.9;
+      color: #50586d;
+      margin-bottom: 28px;
+      word-break: keep-all;
+    }
+
+    .hero-points {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin-bottom: 30px;
+    }
+
+    .hero-point {
+      background: #f7f9ff;
+      border: 1px solid rgba(32, 59, 143, 0.08);
+      border-radius: 18px;
+      padding: 16px;
+      font-size: 15px;
+      font-weight: 700;
+      color: #31436b;
+      line-height: 1.6;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-block;
+      text-decoration: none;
+      padding: 14px 22px;
+      border-radius: 14px;
+      font-weight: 800;
+      font-size: 15px;
+      transition: transform 0.2s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn-primary {
+      background: linear-gradient(90deg, #0f3e97, #345fd1);
+      color: #fff;
+      box-shadow: 0 10px 24px rgba(52, 95, 209, 0.25);
+    }
+
+    .btn-secondary {
+      background: #fff;
+      color: #203b8f;
+      border: 1px solid rgba(32, 59, 143, 0.1);
+    }
+
+    .hero-right {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .logo-panel {
+      width: 100%;
+      max-width: 500px;
+      background: rgba(255, 255, 255, 0.78);
+      backdrop-filter: blur(14px);
+      border-radius: 32px;
+      padding: 34px;
+      text-align: center;
+      box-shadow: 0 24px 60px rgba(45, 70, 160, 0.13);
+    }
+
+    .logo-panel img {
+      width: 100%;
+      max-width: 360px;
+      height: auto;
+      object-fit: contain;
+      margin-bottom: 18px;
+    }
+
+    .logo-panel h3 {
+      font-size: 24px;
+      color: #0e3b8f;
+      margin-bottom: 12px;
+    }
+
+    .logo-panel p {
+      color: #596073;
+      font-size: 16px;
+      line-height: 1.8;
+      word-break: keep-all;
+    }
+
+    .section {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 90px 24px 20px;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 34px;
+    }
+
+    .section-header .small {
+      color: #f26b2c;
+      font-size: 14px;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+
+    .section-header h2 {
+      font-size: 42px;
+      color: #0e3b8f;
+      margin-bottom: 14px;
+      letter-spacing: -0.8px;
+    }
+
+    .section-header p {
+      max-width: 880px;
+      margin: 0 auto;
+      color: #5b6274;
+      line-height: 1.9;
+      font-size: 17px;
+      word-break: keep-all;
+    }
+
+    .card-grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 22px;
+    }
+
+    .card-grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+    }
+
+    .card-grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(12px);
+      border-radius: 26px;
+      padding: 28px;
+      box-shadow: 0 16px 40px rgba(30, 55, 130, 0.1);
+      border: 1px solid rgba(32, 59, 143, 0.06);
+      height: 100%;
+    }
+
+    .card h3 {
+      font-size: 24px;
+      color: #203b8f;
+      margin-bottom: 12px;
+    }
+
+    .card p,
+    .card li {
+      color: #586074;
+      font-size: 16px;
+      line-height: 1.85;
+      word-break: keep-all;
+    }
+
+    .card ul {
+      padding-left: 18px;
+    }
+
+    .goal-num {
+      font-size: 18px;
+      font-weight: 900;
+      color: #f26b2c;
+      margin-bottom: 10px;
+    }
+
+    .program-card {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .program-badge {
+      display: inline-block;
+      margin-bottom: 14px;
+      padding: 8px 13px;
+      border-radius: 999px;
+      font-weight: 900;
+      font-size: 13px;
+      letter-spacing: 0.5px;
+      background: #eef2ff;
+      color: #203b8f;
+    }
+
+    .highlight-box {
+      background: linear-gradient(135deg, rgba(14, 59, 143, 0.96), rgba(54, 99, 214, 0.92));
+      color: white;
+      border-radius: 32px;
+      padding: 36px;
+      box-shadow: 0 22px 48px rgba(28, 58, 141, 0.22);
+    }
+
+    .highlight-box h3 {
+      font-size: 30px;
+      margin-bottom: 14px;
+    }
+
+    .highlight-box p {
+      line-height: 1.9;
+      font-size: 17px;
+      color: rgba(255, 255, 255, 0.92);
+    }
+
+    .team-box {
+      margin-top: 24px;
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 22px;
+    }
+
+    .team-stat {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      min-height: 240px;
+    }
+
+    .team-stat .big {
+      font-size: 76px;
+      font-weight: 900;
+      color: #0e3b8f;
+      line-height: 1;
+    }
+
+    .team-stat .label {
+      margin-top: 10px;
+      font-size: 18px;
+      font-weight: 700;
+      color: #5e6578;
+    }
+
+    .cta {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 90px 24px 110px;
+    }
+
+    .cta-box {
+      background: rgba(255,255,255,0.84);
+      backdrop-filter: blur(14px);
+      border-radius: 34px;
+      padding: 42px;
+      text-align: center;
+      box-shadow: 0 18px 44px rgba(36, 59, 136, 0.12);
+    }
+
+    .cta-box h2 {
+      font-size: 38px;
+      color: #0e3b8f;
+      margin-bottom: 16px;
+    }
+
+    .cta-box p {
+      color: #5c6477;
+      line-height: 1.9;
+      font-size: 17px;
+      margin-bottom: 24px;
+      word-break: keep-all;
+    }
+
+    footer {
+      text-align: center;
+      color: #6b7285;
+      font-size: 14px;
+      padding-bottom: 40px;
+    }
+
+    @media (max-width: 1024px) {
+      .hero {
+        grid-template-columns: 1fr;
+        min-height: auto;
+      }
+
+      .card-grid-4 {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .card-grid-3 {
+        grid-template-columns: 1fr;
+      }
+
+      .team-box {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .nav-inner {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      nav {
+        gap: 14px;
+      }
+
+      .hero-left {
+        padding: 30px 24px;
+      }
+
+      .hero-left h1 {
+        font-size: 42px;
+      }
+
+      .hero-points,
+      .card-grid-2,
+      .card-grid-4 {
+        grid-template-columns: 1fr;
+      }
+
+      .section-header h2 {
+        font-size: 32px;
+      }
+
+      .cta-box h2 {
+        font-size: 30px;
+      }
+
+      .team-stat .big {
+        font-size: 58px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="bg-canvas"></div>
+
+  <div class="page">
+    <header>
+      <div class="nav-inner">
+        <div class="brand">경제놀이터</div>
+        <nav>
+          <a href="#home">홈</a>
+          <a href="#about">교육 소개</a>
+          <a href="#goals">교육 목표</a>
+          <a href="#team">강사진</a>
+          <a href="#program">프로그램</a>
+          <a href="#difference">차별점</a>
+          <a href="#contact">문의</a>
+        </nav>
+      </div>
+    </header>
+
+    <section class="hero" id="home">
+      <div class="hero-left">
+        <div class="eyebrow">전문성과 재미를 갖춘 경제교육</div>
+        <h1>경제를 가장 재미있게 배우는 곳,<br><span>경제놀이터</span></h1>
+        <p>
+          경제놀이터는 지식을 전달하는 데 그치지 않고,
+          생활 속에서 경제를 이해하고 직접 경험하는 경제교육을 목표로 합니다.
+          놀이, 토론, 체험, 시뮬레이션 중심의 교육을 통해
+          경제를 더 쉽고 흥미롭게 만날 수 있도록 구성합니다.
+        </p>
+
+        <div class="hero-points">
+          <div class="hero-point">전문성과 재미를 갖춘 경제교육</div>
+          <div class="hero-point">11명의 경제교육 강사진</div>
+          <div class="hero-point">체험·토론·시뮬레이션 기반</div>
+          <div class="hero-point">생활 밀착형 경제교육</div>
+        </div>
+
+        <div class="hero-buttons">
+          <a href="#about" class="btn btn-primary">소개 보기</a>
+          <a href="#contact" class="btn btn-secondary">문의하기</a>
+        </div>
+      </div>
+
+      <div class="hero-right">
+        <div class="logo-panel">
+          <img src="logo.png" alt="경제놀이터 로고">
+          <h3>Economy Playground</h3>
+          <p>
+            어렵게 느껴질 수 있는 경제를
+            놀이처럼 흥미롭게, 생활 속에서 자연스럽게 배울 수 있도록
+            설계된 경제교육 브랜드입니다.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="about">
+      <div class="section-header">
+        <div class="small">ABOUT</div>
+        <h2>교육 소개</h2>
+        <p>
+          경제놀이터는 경제를 가장 재미있게 배우는 공간입니다.
+          우리는 매일 소비하고 선택하며 경제 활동을 하고 있지만,
+          경제를 체계적으로 배울 기회는 많지 않습니다.
+          경제놀이터는 놀이, 토론, 체험, 시뮬레이션 중심의 경제교육을 제공하며,
+          강사들이 함께 교육을 공유하고 콘텐츠를 연구하며
+          새로운 경제교육 모델을 만들어가는 교육 공동체입니다.
+        </p>
+      </div>
+
+      <div class="card-grid-2">
+        <div class="highlight-box">
+          <h3>경제를 가장 재미있게 배우는 곳</h3>
+          <p>
+            경제를 단순히 설명하는 데서 끝나지 않고,
+            참여와 경험을 통해 이해하고 적용하는 교육을 지향합니다.
+            배움이 실제 선택과 생활로 이어질 수 있도록 설계합니다.
+          </p>
+        </div>
+
+        <div class="card">
+          <h3>교육 운영 방향</h3>
+          <p>
+            경제놀이터는 생활 속 경제 이해, 직접 경험,
+            토론과 시뮬레이션을 중심으로 운영됩니다.
+            학습자가 경제를 멀게 느끼지 않도록
+            실제 생활과 연결되는 방식으로 교육을 구성합니다.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="goals">
+      <div class="section-header">
+        <div class="small">GOALS</div>
+        <h2>교육 목표</h2>
+        <p>
+          경제놀이터 교육은 올바른 경제관 형성부터
+          합리적인 의사결정, 금융 습관, 문제 해결력까지
+          생활 전반에 연결되는 역량 강화를 목표로 운영됩니다.
+        </p>
+      </div>
+
+      <div class="card-grid-4">
+        <div class="card">
+          <div class="goal-num">01</div>
+          <h3>올바른 경제관 형성</h3>
+          <p>경제를 이해하는 기본 태도와 균형 잡힌 시각을 기릅니다.</p>
+        </div>
+        <div class="card">
+          <div class="goal-num">02</div>
+          <h3>합리적 의사결정</h3>
+          <p>선택과 판단의 과정을 통해 경제적 사고력을 강화합니다.</p>
+        </div>
+        <div class="card">
+          <div class="goal-num">03</div>
+          <h3>안전한 금융 습관</h3>
+          <p>생활 속 금융 이해를 높이고 안전한 금융 습관 형성을 돕습니다.</p>
+        </div>
+        <div class="card">
+          <div class="goal-num">04</div>
+          <h3>문제 해결력 확장</h3>
+          <p>실제 사례를 바탕으로 생활 속 경제 문제 해결 능력을 키웁니다.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="team">
+      <div class="section-header">
+        <div class="small">TEAM</div>
+        <h2>교육 강사진</h2>
+        <p>
+          경제놀이터의 교육은 전문성을 갖춘 경제교육 강사진이 진행합니다.
+          대학 졸업 이상의 학력을 갖춘 강사진,
+          경제교육 전문 강사 양성과정 이수자,
+          그리고 학교 및 다양한 교육 현장 강의 경험 보유 강사진이 함께합니다.
+        </p>
+      </div>
+
+      <div class="team-box">
+        <div class="card">
+          <h3>전문 강사진 구성</h3>
+          <ul>
+            <li>대학 졸업 이상의 학력을 갖춘 전문 강사진</li>
+            <li>경제교육 전문 강사 양성과정 이수</li>
+            <li>학교 및 다양한 교육 현장 강의 경험 보유</li>
+            <li>전문성과 재미를 함께 갖춘 수업 운영</li>
+          </ul>
+        </div>
+
+        <div class="card team-stat">
+          <div>
+            <div class="big">11</div>
+            <div class="label">명의 경제교육 강사진</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="program">
+      <div class="section-header">
+        <div class="small">PROGRAM</div>
+        <h2>맞춤형 프로그램</h2>
+        <p>
+          대상과 목적에 맞는 맞춤형 경제교육을 운영하며,
+          체험·토론·시뮬레이션 기반으로 연령과 교육 목적에 맞게 프로그램이 설계됩니다.
+        </p>
+      </div>
+
+      <div class="card-grid-4">
+        <div class="card program-card">
+          <div class="program-badge">PLAY</div>
+          <h3>체험형 활동</h3>
+          <p>경제를 놀이처럼 재미있게 배우는 활동 중심의 프로그램입니다.</p>
+        </div>
+        <div class="card program-card">
+          <div class="program-badge">THINK</div>
+          <h3>토론형 활동</h3>
+          <p>경제적 사고력을 키우는 질문과 토론 중심의 활동입니다.</p>
+        </div>
+        <div class="card program-card">
+          <div class="program-badge">SHARE</div>
+          <h3>공유형 활동</h3>
+          <p>경제적 시야를 넓히고 함께 나누는 학습 경험을 제공합니다.</p>
+        </div>
+        <div class="card program-card">
+          <div class="program-badge">CREATE</div>
+          <h3>탐구형 활동</h3>
+          <p>새로운 경제 문제를 창의적으로 해결하는 탐구형 프로그램입니다.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="difference">
+      <div class="section-header">
+        <div class="small">DIFFERENCE</div>
+        <h2>교육 차별점</h2>
+        <p>
+          경제놀이터는 실제 생활과 연결되고,
+          참여와 경험을 중시하는 방식으로 경제교육을 구성합니다.
+        </p>
+      </div>
+
+      <div class="card-grid-2">
+        <div class="card">
+          <h3>참여형 교육</h3>
+          <p>게임, 토론, 체험 중심의 참여형 프로그램으로 운영합니다.</p>
+        </div>
+        <div class="card">
+          <h3>생활 밀착형 경제교육</h3>
+          <p>교과 지식 전달을 넘어 실제 생활경제와 연결되는 교육을 제공합니다.</p>
+        </div>
+        <div class="card">
+          <h3>금융 위험 대응 교육</h3>
+          <p>금융 피해 사례 문제를 반영하여 금융 보호 역량 강화를 돕습니다.</p>
+        </div>
+        <div class="card">
+          <h3>경험 중심 학습</h3>
+          <p>직접 경험하고 판단하는 교육 방식을 통해 이해도를 높입니다.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta" id="contact">
+      <div class="cta-box">
+        <h2>경제를 더 재미있고 의미 있게 배우는 방법</h2>
+        <p>
+          경제놀이터는 전문성과 재미를 함께 담은 경제교육을 지향합니다.
+          대상과 목적에 맞는 맞춤형 프로그램으로
+          다양한 교육 현장에 적용할 수 있도록 준비하고 있습니다.
+        </p>
+        <div class="hero-buttons" style="justify-content:center;">
+          <a href="mailto:example@email.com" class="btn btn-primary">문의 메일</a>
+          <a href="#home" class="btn btn-secondary">맨 위로</a>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      © 2026 경제놀이터 | Economy Playground
+    </footer>
+  </div>
+
+  <script>
+    let dots = [];
+    let lines = [];
+
+    function setup() {
+      const canvas = createCanvas(windowWidth, windowHeight);
+      canvas.parent("bg-canvas");
+
+      for (let i = 0; i < 80; i++) {
+        dots.push({
+          x: random(width),
+          y: random(height),
+          r: random(2, 5),
+          dx: random(-0.35, 0.35),
+          dy: random(-0.35, 0.35),
+          a: random(60, 180)
+        });
+      }
+    }
+
+    function draw() {
+      clear();
+
+      for (let i = 0; i < dots.length; i++) {
+        let p = dots[i];
+
+        noStroke();
+        fill(32, 59, 143, p.a);
+        ellipse(p.x, p.y, p.r);
+
+        fill(242, 107, 44, p.a * 0.7);
+        ellipse(p.x + 12, p.y - 8, p.r * 0.7);
+
+        p.x += p.dx;
+        p.y += p.dy;
+
+        if (p.x < 0 || p.x > width) p.dx *= -1;
+        if (p.y < 0 || p.y > height) p.dy *= -1;
+
+        for (let j = i + 1; j < dots.length; j++) {
+          let q = dots[j];
+          let d = dist(p.x, p.y, q.x, q.y);
+
+          if (d < 120) {
+            stroke(90, 110, 190, 22);
+            line(p.x, p.y, q.x, q.y);
+          }
+        }
+      }
+    }
+
+    function windowResized() {
+      resizeCanvas(windowWidth, windowHeight);
+    }
+  </script>
+</body>
+</html>
